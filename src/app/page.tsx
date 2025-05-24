@@ -1,5 +1,5 @@
 // frontend/src/app/page.tsx
-'use client'; // This directive indicates a Client Component
+'use client';
 
 import { useEffect, useState } from 'react';
 import { User } from '../types/user';
@@ -24,8 +24,12 @@ export default function Home() {
         }
         const data = await response.json();
         setMessage(data.msg);
-      } catch (err: any) {
-        setError(`Failed to fetch message: ${err.message}`);
+      } catch (err) { // Removed ': any'
+        if (err instanceof Error) { // Type guard: check if it's an Error instance
+          setError(`Failed to fetch message: ${err.message}`);
+        } else {
+          setError(`An unknown error occurred while fetching message.`);
+        }
         setMessage('Failed to load message from backend.');
       } finally {
         setLoading(false);
@@ -43,8 +47,12 @@ export default function Home() {
         }
         const data: User[] = await response.json();
         setUsers(data);
-      } catch (err: any) {
-        setError(`Failed to fetch users: ${err.message}`);
+      } catch (err) { // Removed ': any'
+        if (err instanceof Error) { // Type guard: check if it's an Error instance
+          setError(`Failed to fetch users: ${err.message}`);
+        } else {
+          setError(`An unknown error occurred while fetching users.`);
+        }
         setUsers([]);
       } finally {
         setLoading(false);
@@ -53,7 +61,7 @@ export default function Home() {
 
     fetchMessage();
     fetchUsers();
-  }, [BACKEND_URL]); // Dependency array to re-run effect if backend URL changes
+  }, [BACKEND_URL]);
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
